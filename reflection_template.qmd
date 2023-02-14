@@ -23,11 +23,24 @@ execute:
 
 ```{r wd-1-csv}
 
+library(tidyverse)
+library(dplyr)
+library(here)
+
+ avocado<-read_csv(here("week 4", "avocado.csv"))
+
 ```
 
 -   `xlsx`
 
 ```{r wd-1-xlsx}
+
+
+military <- read_xlsx(here::here("data", 
+                                 "gov_spending_per_capita.xlsx"), 
+                      sheet = "Share of Govt. spending", 
+                      skip = 7, 
+                      n_max = 191)
 
 ```
 
@@ -35,19 +48,35 @@ execute:
 
 ```{r wd-1-txt}
 
+message <- read_csv(here::here("data", "scrambled_message.txt")
+                      )
+
+
+
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
 
 ```{r wd-2}
 
+avocado_clean|>
+  separate(col = Date, into = c('year','month','day'),sep ='/')|>
+  select(month,total_volume)|>
+  slice_max(total_volume)
 ```
 
 **WD-3: I can filter rows from a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
 
 -   numeric
+-   
 
 ```{r wd-3-numeric}
+
+
+avocado_major_region|>
+  filter(type =="organic",year ==2017)|>
+  select(region,total_small)|>
+  slice_max(total_small)
 
 ```
 
@@ -55,18 +84,33 @@ execute:
 
 ```{r wd-3-string}
 
+
+hiphop_clean|>
+  mutate(bieber = as.numeric(bieber))|>
+  filter(city > 10000 & city< 60000, age> 17 & age< 23, ethnic == "white", sex == "Male", bieber >= 5)|>
+  distinct(subj)
+
 ```
 
 -   factor
 
 ```{r wd-3-factor}
 
+
+hiphop_clean|>
+   group_by(word)|>
+  filter(familiarity ==1,age<20)|>
+  summarise(familiarity = n())|>
+  slice_max(familiarity)
 ```
 
 -   date
 
 ```{r wd-3-date}
 
+
+suspects <- suspects %>%
+  filter(!wday(Time.Spotted, label = TRUE, abbr = FALSE) %in% c("Tuesday" , "Thursday"))
 ```
 
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
