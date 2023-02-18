@@ -250,28 +250,50 @@ I've done this in the following provided assignments:
 **R-2: I can write well documented and tidy code.**
 
 -   Example 1
+-   lab 5 question 3 time-series-plot section
 
 ```{r r-2-1}
-
+surveys|>
+  group_by(genus,year)|>
+  summarize(weight = mean(weight))|>
+  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
+  geom_line()+
+  labs(x = "years", y = "weight (gm)", color = "genus")
 ```
 
 -   Example 2
 
 ```{r r-2-2}
 
+ avocado_clean|>
+  separate(col = Date, into = c('year','month','day'),sep ='/')|>
+  select(month,total_volume)|>
+  slice_max(total_volume)
+
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
 
 -   Example 1
+-   challenge 4
 
 ```{r r-3-1}
+
+house_price_four_cities<-median_house_price|>
+  semi_join(four_cities, by = "RegionName")|>
+  pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
+  rename(region = "RegionName")
 
 ```
 
 -   Example 2
+-   lab 3 question 9
 
 ```{r r-3-2}
+  hiphop_clean|>
+  select(subj,sex,age,ethnic)|>
+  distinct(subj, .keep_all = TRUE)|>
+  summary()
 
 ```
 
@@ -283,17 +305,39 @@ I've done this in the following provided assignments:
 
 ```{r dvs-1-num}
 
+surveys|>
+  group_by(genus,year)|>
+  summarize(weight = mean(weight))|>
+  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
+  geom_line()+
+  labs(x = "years", y = NULL, color = "genus")+
+  ggtitle("Mean Weight (gm) for each genus for each year ")+
+ theme( plot.title.position = "plot")
+ # theme(plot.title = element_text(hjust = 0))
 ```
 
 -   numeric variables and categorical variables
 
 ```{r dvs-2-num-cat}
 
+
+ggplot(data = surveys,
+  mapping = aes(x = weight, y = fct_reorder(species,weight)))+
+  geom_boxplot()+
+   labs(x = "Weight (gm)", y = NULL)+ggtitle("Weights for Each Animal Species")+
+   theme( plot.title.position = "plot")
+     # theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 -   categorical variables
 
 ```{r dvs-2-cat}
+     ggplot(data = demo,
+  mapping = aes(x = ethnic, fill = ethnic))+
+    geom_bar(show.legend = FALSE)+
+    labs(x = "Ethnicity of Participants", y = "number of student",
+         title = "The Ethnic Background of Students in the Study")
 
 ```
 
@@ -301,62 +345,142 @@ I've done this in the following provided assignments:
 
 ```{r dvs-2-date}
 
+
+surveys|>
+  filter(day_of_week != "NA" )|>
+  mutate(day_of_week = fct_recode(day_of_week, 
+    "Weekday" = "Mon",
+    "Weekday" = "Tue",
+    "Weekday" = "Wed",
+    "Weekday" = "Thu",
+    "Weekday" = "Fri",
+    "Weekend" = "Sat",
+    "Weekend" = "Sun"))|>
+  group_by(day_of_week)|>
+  summarise(taxa = n())|>
+  ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
+     geom_col(show.legend = FALSE,width = 0.2)+
+     labs(x = "day of week", y = NULL)+
+  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
+  theme(plot.title.position = "plot")
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
 
 -   Example 1
+-   lab 5 question 3 capture 0ver the week section (Revised - theme(plot.title.position = "plot"))
 
 ```{r dvs-2-1}
-
+surveys|>
+  filter(day_of_week != "NA" )|>
+  mutate(day_of_week = fct_recode(day_of_week, 
+    "Weekday" = "Mon",
+    "Weekday" = "Tue",
+    "Weekday" = "Wed",
+    "Weekday" = "Thu",
+    "Weekday" = "Fri",
+    "Weekend" = "Sat",
+    "Weekend" = "Sun"))|>
+  group_by(day_of_week)|>
+  summarise(taxa = n())|>
+  ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
+     geom_col(show.legend = FALSE,width = 0.2)+
+     labs(x = "day of week", y = NULL)+
+  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
+  theme(plot.title.position = "plot")
 ```
 
 -   Example 2
+-   lab 5 question 3
 
 ```{r dvs-2-2}
-
+  ggplot(data = california_graph, 
+           mapping = aes( x = region, y = diff_price, fill = region))+
+      geom_col(show.legend = FALSE,width = 0.4)+
+      scale_x_discrete(expand=c(0,0))+
+      scale_y_continuous(expand=c(0,0)) +
+          labs(y = "differences in price", x= "cities of California")+
+  ggtitle("differences in price of organic vs. conventional \n avocado across four California cities")+
+      theme(plot.title = element_text(hjust = 0.5))
 ```
 
 **DVS-3: I show creativity in my visualizations**
 
 -   Example 1
+-   lab 4 question 7
 
 ```{r dvs-3-1}
-
+  ggplot(data = California_mean_graph, aes(x = region, y = Avocado_sold, fill = Avocado_Size))+
+    
+    geom_col(position = position_fill(reverse = TRUE))+
+    labs(y = "Proportion of Mean Avocado Sold", x = "Region of CA")+
+    facet_wrap(.~type)+
+    
+    guides(fill = guide_legend(title = "Avocado Size"))+
+    scale_fill_discrete(labels = c("extra large", "large","small"))
+  
 ```
 
 -   Example 2
+-   challenge 2
 
 ```{r dvs-3-2}
+
+
+ggplot(data = surveys,
+  mapping = aes(x = weight, y = species, fill= species))+
+  geom_density_ridges(rel_min_height = 0.005, scale = 4, alpha = 0.4, color = "white") +
+  scale_x_continuous(expand=c(0,0))+
+  scale_y_discrete(expand = c(0,0))+
+   labs(x = "Weight (gm)", y = "Animal Species" )
 
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
 
 -   Example 1
+-   lab 4 question 5
 
 ```{r dvs-4-1}
 
+avocado_metro_region|>
+  group_by(region)|>
+  summarize(mean_total_volume = mean(total_volume))|>
+  slice_max(region, n=5)
 ```
 
 -   Example 2
+-   lab 5 question 3 time-series-plot
 
 ```{r dvs-4-2}
+
+surveys|>
+  group_by(genus,year)|>
+  summarize(weight = mean(weight))|>
+  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
+  geom_line()+
+  labs(x = "years", y = "weight (gm)", color = "genus")
 
 ```
 
 **DVS-5: I can find summaries of variables across multiple groups.**
 
 -   Example 1
+-   lab 3 question
 
 ```{r dvs-5-1}
 
+hiphop|>
+  summarize(across(asianMove:whiteMove,mean), blackWeekly = mean(blackWeekly))
 ```
 
 -   Example 2
 
 ```{r dvs-5-2}
-
+ hiphop_clean|>
+  select(subj,sex,age,ethnic)|>
+  distinct(subj, .keep_all = TRUE)|>
+  summary()
 ```
 
 **DVS-6: I can create tables which make my summaries clear to the reader.**
@@ -364,13 +488,19 @@ I've done this in the following provided assignments:
 -   Example 1
 
 ```{r dvs-6-1}
-
+avocado_metro_region|>
+  group_by(region)|>
+  summarize(mean_total_volume = mean(total_volume))|>
+  slice_max(region, n=5)
 ```
 
 -   Example 2
 
 ```{r dvs-6-2}
-
+ California_mean_graph<- california_avocado_region|>
+    group_by(region,type)|>
+  summarize(m_total_volume=mean(total_volume), m_total_small = mean(total_small),m_total_large = mean(total_large),m_total_extra_large = mean(total_extra_large),.groups = 'drop')|>
+    pivot_longer(names_to = "Avocado_Size", values_to = "Avocado_sold", c(-region, -type,-m_total_volume))
 ```
 
 **DVS-7: I show creativity in my tables.**
