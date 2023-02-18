@@ -526,13 +526,19 @@ avocado_metro_region|>
 -   using a single function call
 
 ```{r pe-1-one-call}
-
+hiphop_clean <- hiphop |>
+  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
+boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
+  select(-one_of("numPreferredArtists","numOverallArtists"))
 ```
 
 -   `across()`
 
 ```{r pe-1-across}
-
+hiphop_clean <- hiphop |>
+  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
+boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
+  select(-one_of("numPreferredArtists","numOverallArtists"))
 ```
 
 -   `map()` functions
@@ -546,7 +552,11 @@ avocado_metro_region|>
 -   Example 1
 
 ```{r pe2-1}
-
+ California_mean_graph<- california_avocado_region|>
+    group_by(region,type)|>
+  summarize(m_total_volume=mean(total_volume), m_total_small = mean(total_small),m_total_large = mean(total_large),m_total_extra_large = mean(total_extra_large),.groups = 'drop')|>
+    pivot_longer(names_to = "Avocado_Size", values_to = "Avocado_sold", c(-region, -type,-m_total_volume))
+  
 ```
 
 -   Example 2
