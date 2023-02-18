@@ -20,6 +20,7 @@ execute:
 **WD-1: I can import data from a *variety* of formats (e.g., csv, xlsx, txt, etc.).**
 
 -   `csv`
+-   lab 4
 
 ```{r wd-1-csv}
 
@@ -32,6 +33,7 @@ library(here)
 ```
 
 -   `xlsx`
+-   practice activity 4
 
 ```{r wd-1-xlsx}
 
@@ -45,6 +47,7 @@ military <- read_xlsx(here::here("data",
 ```
 
 -   `txt`
+-   practice activity 5.2
 
 ```{r wd-1-txt}
 
@@ -57,6 +60,8 @@ message <- read_csv(here::here("data", "scrambled_message.txt")
 
 **WD-2: I can select necessary columns from a dataset.**
 
+-   Lab 4 question 4
+
 ```{r wd-2}
 
 avocado_clean|>
@@ -68,7 +73,7 @@ avocado_clean|>
 **WD-3: I can filter rows from a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
 
 -   numeric
--   
+-   Lab 4 Question 3
 
 ```{r wd-3-numeric}
 
@@ -81,6 +86,7 @@ avocado_major_region|>
 ```
 
 -   character -- specifically a string
+-   Lab 4 Question 14
 
 ```{r wd-3-string}
 
@@ -93,6 +99,7 @@ hiphop_clean|>
 ```
 
 -   factor
+-   Lab 3 Question 11
 
 ```{r wd-3-factor}
 
@@ -105,6 +112,7 @@ hiphop_clean|>
 ```
 
 -   date
+-   Practice activity 5.1 question 2
 
 ```{r wd-3-date}
 
@@ -116,26 +124,48 @@ suspects <- suspects %>%
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
 
 -   numeric
+-   Lab 4 question 6
 
 ```{r wd-4-numeric}
+
+ california_new|>
+  group_by(region)|>
+  summarize(m_Conventional=mean(conventional),m_organic = mean(organic))|>
+    mutate(diff_mean = m_organic - m_Conventional)|>
+    distinct(abs(diff_mean), region)
 
 ```
 
 -   character -- specifically a string
+-   lab 3 question 7
 
 ```{r wd-4-string}
 
+hiphop_clean<-hiphop_clean|>
+  mutate(race = if_else(ethnic == "white", "white","non-white"))
 ```
 
 -   factor
+-   lab 3 question 5
 
 ```{r wd-4-factor}
 
+
+hiphop_clean <- hiphop |>
+  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
+boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
+  select(-one_of("numPreferredArtists","numOverallArtists"))
 ```
 
 -   date
+-   practice activity 5.1 question 1
 
 ```{r wd-4-date}
+suspects <- suspects %>%
+  mutate(Time.Spotted = ymd_hms(Time.Spotted),
+         Time.Spotted = force_tz(Time.Spotted,
+                                 tzone = "America/Los_Angeles")
+         )
 
 ```
 
@@ -144,6 +174,7 @@ suspects <- suspects %>%
 -   `left_join()`
 
 ```{r wd-5-left}
+
 
 ```
 
@@ -160,37 +191,54 @@ suspects <- suspects %>%
 ```
 
 -   `full_join()`
+-   challenge 4
 
 ```{r wd-5-full}
-
+join_dataset<-house_price_four_cities|>
+  full_join(california_avocado_region, by = "region")|>
+   select(region, AveragePrice, prices,Date,months,type)|>
+  distinct(AveragePrice,prices,type)
 ```
 
 **WD-6: I can use filtering joins to filter rows from a dataframe.**
 
 -   `semi_join()`
+-   lab 4 question 6
 
 ```{r wd-6-semi}
-
+california_avocado_region<-avocado_clean|>
+  semi_join(california_region, by = "region")
 ```
 
 -   `anti_join()`
+-   lab 4 question 5
 
 ```{r wd-6-anti}
-
+avocado_metro_region<-avocado_clean|>
+  anti_join(major_region, by = "region")|>
+  anti_join(state_region, by = "region")|>
+  filter(region!= "TotalUS")
 ```
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
 
 -   `pivot_longer()`
+-   challenge 4
 
 ```{r wd-7-long}
-
+house_price_four_cities<-median_house_price|>
+  semi_join(four_cities, by = "RegionName")|>
+  pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
+  rename(region = "RegionName")
 ```
 
 -   `pivot_wider()`
+-   lab 4 question 6
 
 ```{r wd-7-wide}
-
+california_new<-california_avocado_region|>
+  select(-(total_volume:total_extra_large),-year,Date)|>
+  pivot_wider(names_from = type, values_from = AveragePrice)
 ```
 
 ## Reproducibility
