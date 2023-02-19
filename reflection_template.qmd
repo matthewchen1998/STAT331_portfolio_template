@@ -506,6 +506,10 @@ house_price_four_cities<-median_house_price|>
   semi_join(four_cities, by = "RegionName")|>
   pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
   rename(region = "RegionName")
+
+house_price_four_cities$region<- gsub(", CA","",as.character(house_price_four_cities$region))
+
+house_price_four_cities$region<-gsub(" ","",as.character(house_price_four_cities$region))
 ```
 
 -   Example 2
@@ -655,9 +659,13 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
+Answer: Before lab 5, I do not know that I could use the dplyr function along with the ggplot to create plots and graphs. On Lab 5, I have used the dplyr function to pipe functions into my ggplots. Previously, I always thought that you need to create another dataset in order to create a graph using the ggplot. After I have submitted my lab 5 assignment, I have found out that I do not fully follow Will Chase to have my titles of the graph to be left-aligned. Previously, I only know how to center the titles of the graph as I do not know about the importance of left-alignment of the titles. After doing some research, I have found out that using theme(plot.title.position = "plot") will create a left-alignment for your graph titles.
+
 ## Extending My Thinking
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
+
+Answer: Throughout the course, I have been think about about how to divide my titles into two lines when the lines are too long. Through some research, I have found out that by using the escape character "\\n" I could divide my titles into two lines. I started to use the escape character "\\n" on my lab 4 assignment. I also learned how to center my title for the graph when I was doing my lab 4 assignment. I found out that the function "theme(plot.title = element_text(hjust = 0.5))" allows you to center your title for the graph after doing some research . When I was doing research for my Challenge 4 assignment, I have learned how to remove spaces between character strings within a variable using the "gsub" function.
 
 ## Peer Support & Collaboration
 
