@@ -86,7 +86,7 @@ avocado_major_region|>
 ```
 
 -   character -- specifically a string
--   Lab 4 Question 14
+-   Lab 3 Question 14
 
 ```{r wd-3-string}
 
@@ -262,6 +262,7 @@ surveys|>
 ```
 
 -   Example 2
+-   lab 4 question 4
 
 ```{r r-2-2}
 
@@ -302,6 +303,7 @@ house_price_four_cities<-median_house_price|>
 **DVS-1: I can create visualizations for a *variety* of variable types (e.g., numeric, character, factor, date)**
 
 -   numeric variables
+-   lab 5 time-series-plot section question 4 (Revised - theme(plot.title.position = "plot"))
 
 ```{r dvs-1-num}
 
@@ -313,10 +315,11 @@ surveys|>
   labs(x = "years", y = NULL, color = "genus")+
   ggtitle("Mean Weight (gm) for each genus for each year ")+
  theme( plot.title.position = "plot")
- # theme(plot.title = element_text(hjust = 0))
+ 
 ```
 
 -   numeric variables and categorical variables
+-   lab 5 revisiting lab 2 section question 2
 
 ```{r dvs-2-num-cat}
 
@@ -326,11 +329,12 @@ ggplot(data = surveys,
   geom_boxplot()+
    labs(x = "Weight (gm)", y = NULL)+ggtitle("Weights for Each Animal Species")+
    theme( plot.title.position = "plot")
-     # theme(plot.title = element_text(hjust = 0.5))
+     
 
 ```
 
 -   categorical variables
+-   lab 3 question 10
 
 ```{r dvs-2-cat}
      ggplot(data = demo,
@@ -346,23 +350,7 @@ ggplot(data = surveys,
 ```{r dvs-2-date}
 
 
-surveys|>
-  filter(day_of_week != "NA" )|>
-  mutate(day_of_week = fct_recode(day_of_week, 
-    "Weekday" = "Mon",
-    "Weekday" = "Tue",
-    "Weekday" = "Wed",
-    "Weekday" = "Thu",
-    "Weekday" = "Fri",
-    "Weekend" = "Sat",
-    "Weekend" = "Sun"))|>
-  group_by(day_of_week)|>
-  summarise(taxa = n())|>
-  ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
-     geom_col(show.legend = FALSE,width = 0.2)+
-     labs(x = "day of week", y = NULL)+
-  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
-  theme(plot.title.position = "plot")
+
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
@@ -466,7 +454,7 @@ surveys|>
 **DVS-5: I can find summaries of variables across multiple groups.**
 
 -   Example 1
--   lab 3 question
+-   lab 3 question 4
 
 ```{r dvs-5-1}
 
@@ -475,6 +463,7 @@ hiphop|>
 ```
 
 -   Example 2
+-   lab 3 question 9
 
 ```{r dvs-5-2}
  hiphop_clean|>
@@ -486,6 +475,7 @@ hiphop|>
 **DVS-6: I can create tables which make my summaries clear to the reader.**
 
 -   Example 1
+-   lab 4 question 4
 
 ```{r dvs-6-1}
 avocado_metro_region|>
@@ -495,6 +485,7 @@ avocado_metro_region|>
 ```
 
 -   Example 2
+-   lab 4 question 7
 
 ```{r dvs-6-2}
  California_mean_graph<- california_avocado_region|>
@@ -506,17 +497,26 @@ avocado_metro_region|>
 **DVS-7: I show creativity in my tables.**
 
 -   Example 1
+-   challenge 4
 
 ```{r dvs-7-1}
 
-###
 
+house_price_four_cities<-median_house_price|>
+  semi_join(four_cities, by = "RegionName")|>
+  pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
+  rename(region = "RegionName")
 ```
 
 -   Example 2
+-   lab 4 question 2
 
 ```{r dvs-7-2}
-
+avocado_clean<-avocado |>
+  select(-ends_with("Bags"),-...1)|>
+  rename(total_small = '4046',total_large = '4225',
+         total_extra_large='4770',
+         total_volume = "Total Volume")
 ```
 
 ## Program Efficiency
@@ -524,6 +524,7 @@ avocado_metro_region|>
 **PE-1: I can write concise code which does not repeat itself.**
 
 -   using a single function call
+-   lab 3 question 5
 
 ```{r pe-1-one-call}
 hiphop_clean <- hiphop |>
@@ -533,6 +534,7 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 ```
 
 -   `across()`
+-   lab 3 question 5
 
 ```{r pe-1-across}
 hiphop_clean <- hiphop |>
@@ -550,6 +552,7 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 **PE-2: I can write functions to reduce repetition in my code.**
 
 -   Example 1
+-   lab 4 question 7
 
 ```{r pe2-1}
  California_mean_graph<- california_avocado_region|>
@@ -560,16 +563,24 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 ```
 
 -   Example 2
+-   lab 3 question 14
 
 ```{r pe2-2}
 
+hiphop_clean|>
+  mutate(bieber = as.numeric(bieber))|>
+  filter(city > 10000 & city< 60000, age> 17 & age< 23, ethnic == "white", sex == "Male", bieber >= 5)|>
+  distinct(subj)
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
 
 -   `across()`
+-   lab 3 question 4
 
 ```{r pe-3-across}
+hiphop|>
+  summarize(across(asianMove:whiteMove,mean), blackWeekly = mean(blackWeekly))
 
 ```
 
@@ -586,14 +597,27 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 **PE-4: I can use modern tools when carrying out my analysis.**
 
 -   Example 1
+-   lab 3 question 11
 
 ```{r pe-4-1}
+
+hiphop_clean|>
+   group_by(word)|>
+  filter(familiarity ==1,age<20)|>
+  summarise(familiarity = n())|>
+  slice_max(familiarity)
 
 ```
 
 -   Example 2
+-   lab 4 question 5
 
 ```{r pe-4-2}
+
+hiphop_clean <- hiphop |>
+  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
+boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
+  select(-one_of("numPreferredArtists","numOverallArtists"))
 
 ```
 
