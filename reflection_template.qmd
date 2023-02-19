@@ -11,7 +11,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an B.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from a Lab or Challenge assignment where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -670,3 +670,5 @@ Answer: Throughout the course, I have been think about about how to divide my ti
 ## Peer Support & Collaboration
 
 <!-- Include an image of feedback you gave that you are proud of (either in a peer review or in Discord) -->
+
+Answer: Throughout the course, I have provided help for my team members during Practice acitivity by doing research for my team members as an editor and ask Professor for help if we do not understand some of the instructions of the materials. During peer review, I try my best to offer feedbacks that both point out what they have done right and wrong and offer them advice on improving their codes. In the image below, I provided feedbacks that both points out his mistakes and offers him advice on how to improve his codes. ![](images/Screen%20Shot%202023-02-19%20at%203.11.49%20PM.png)
