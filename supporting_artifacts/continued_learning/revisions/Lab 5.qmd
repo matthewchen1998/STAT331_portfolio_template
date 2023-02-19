@@ -1,0 +1,147 @@
+---
+title: "Lab 5"
+author: "Matthew Chen"
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
+---
+
+## Revisiting Lab 2
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(here)
+#loading in data
+
+surveys<-read_csv(here("Week 2", "surveys.csv"))
+
+#Question 1
+ggplot(data = surveys,
+  mapping = aes(x = weight, y = fct_reorder(species,weight)))+
+  geom_boxplot()+
+   labs(x = "Weight (gm)", y = "Animal Species" )
+
+#Question 2
+
+ggplot(data = surveys,
+  mapping = aes(x = weight, y = fct_reorder(species,weight)))+
+  geom_boxplot()+
+   labs(x = "Weight (gm)", y = NULL)+ggtitle("Weights for Each Animal Species")+
+   theme( plot.title.position = "plot")
+     # theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+# Time-Series-Plot
+
+```{r}
+
+# Question 1
+
+
+
+ggplot(data = surveys, aes(y = weight, x = year,color = genus))+
+  geom_line()+
+  labs(x = "years", y = "weight (gm)")
+ 
+
+# Question 2
+
+surveys|>
+  group_by(genus,year)|>
+  summarize(weight = mean(weight))|>
+  ggplot( aes(y = weight, x = year,color = genus))+
+  geom_line()+
+  labs(x = "years", y = "weight (gm)")
+  
+# Question 3
+
+surveys|>
+  group_by(genus,year)|>
+  summarize(weight = mean(weight))|>
+  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
+  geom_line()+
+  labs(x = "years", y = "weight (gm)", color = "genus")
+
+# Question 4
+
+surveys|>
+  group_by(genus,year)|>
+  summarize(weight = mean(weight))|>
+  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
+  geom_line()+
+  labs(x = "years", y = NULL, color = "genus")+
+  ggtitle("Mean Weight (gm) for each genus for each year ")+
+ theme( plot.title.position = "plot")
+ # theme(plot.title = element_text(hjust = 0))
+```
+
+# Captures over the Week
+
+```{r}
+
+#Question 1
+
+surveys|>
+  filter(day_of_week != "NA" )|>
+  group_by(day_of_week)|>
+  summarise(taxa = n())|>
+  ggplot(aes( x = day_of_week, y = taxa, fill = day_of_week))+
+     geom_col(show.legend = FALSE,width = 0.5)+
+     labs(x = "day of week", y = NULL)+
+  ggtitle("Number of rodent captured for each day of the week")+
+  scale_x_discrete(expand=c(0,0))+
+      scale_y_continuous(expand=c(0,0))+
+  theme(plot.title.position = "plot")
+ # theme(plot.title = element_text(hjust = 0))
+   
+
+# Question 2
+surveys|>
+  filter(day_of_week != "NA" )|>
+  mutate(day_of_week = fct_relevel(day_of_week, 'Mon','Tue','Wed',
+                                   'Thu','Fri','Sat','Sun'))|>
+  group_by(day_of_week)|>
+  summarise(taxa = n())|>
+  ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
+     geom_col(show.legend = FALSE,width = 0.5)+
+     labs(x = "day of week", y = NULL)+
+  ggtitle("Number of rodent captured for each day of the week")+
+  scale_x_discrete(expand=c(0,0))+
+      scale_y_continuous(expand=c(0,0))+
+ theme(plot.title.position = "plot")
+
+# Question 3
+surveys|>
+  filter(day_of_week != "NA" )|>
+  mutate(day_of_week = fct_recode(day_of_week, 
+    "Weekday" = "Mon",
+    "Weekday" = "Tue",
+    "Weekday" = "Wed",
+    "Weekday" = "Thu",
+    "Weekday" = "Fri",
+    "Weekend" = "Sat",
+    "Weekend" = "Sun"))|>
+  group_by(day_of_week)|>
+  summarise(taxa = n())|>
+  ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
+     geom_col(show.legend = FALSE,width = 0.2)+
+     labs(x = "day of week", y = NULL)+
+  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
+  theme(plot.title.position = "plot")
+ 
+
+  
+
+```

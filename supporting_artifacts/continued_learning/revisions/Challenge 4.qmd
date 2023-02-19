@@ -1,0 +1,72 @@
+---
+title: "Challenge 4"
+author: "Matthew Chen"
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
+---
+
+## Challenge 4
+
+Source: https://www.statology.org/r-remove-spaces-from-string/
+
+Dataset source: https://www.zillow.com/research/data/
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(here)
+
+median_house_price<- read_csv(here("week 4", "Metro_mlp_uc_sfrcondo_month.csv"))
+
+four_cities<-tibble(RegionName = c("Sacramento, CA","Los Angeles, CA","San Diego, CA","San Francisco, CA"))
+
+house_price_four_cities<-median_house_price|>
+  semi_join(four_cities, by = "RegionName")|>
+  pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
+  rename(region = "RegionName")
+  
+house_price_four_cities$region<- gsub(", CA","",as.character(house_price_four_cities$region))
+
+house_price_four_cities$region<-gsub(" ","",as.character(house_price_four_cities$region))
+
+california_region<-
+  tibble(region = c("LosAngeles", "SanDiego", "Sacramento","SanFrancisco"))
+
+ avocado<-read_csv(here("week 4", "avocado.csv"))
+ 
+ avocado_clean<-avocado |>
+  select(-ends_with("Bags"),-...1)|>
+  rename(total_small = '4046',total_large = '4225',
+         total_extra_large='4770',
+         total_volume = "Total Volume")
+
+california_avocado_region<-avocado_clean|>
+  semi_join(california_region, by = "region")
+
+join_dataset<-house_price_four_cities|>
+  full_join(california_avocado_region, by = "region")|>
+   select(region, AveragePrice, prices,Date,months,type)|>
+  distinct(AveragePrice,prices,type)
+
+#graph
+
+ggplot(data = join_dataset, mapping = aes(x = prices, y = AveragePrice))+geom_point(color = "green")+
+   labs(x = "House Price", y = "Avocado Price")+
+  geom_smooth(method = "loess")+ggtitle("relationship between avocado price\n and house prices in these four California Cities")+
+   theme(plot.title = element_text(hjust = 0.5))+
+  facet_wrap(.~type)
+
+
+
+```
+
+Answer: As we could see from the above graph, when house prices increase to around median price level for these four California cities, the average prices of an avocado actually decreases. One reason could be that having median house prices in the market indicate no economic crisis so food would be relatively cheaper since there is no inflation and many people could afford to buy houses. However, when houses become more expensive, the average prices of an avocado also increase but the rate of increase depend on the type of avocado. Organic avocados increase more rapidly than conventional avocados when house became more expensive and this make sense because organic avocados are in general more expensive than conventional avocados so when inflation comes food that are already expensive to begin with will see greater increase in prices.

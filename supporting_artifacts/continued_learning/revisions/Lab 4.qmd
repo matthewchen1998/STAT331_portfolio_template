@@ -1,0 +1,197 @@
+---
+title: "Lab 4"
+author: "Matthew Chen"
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
+---
+
+```{r}
+
+#Loading packages and cvs file
+library(tidyverse)
+library(dplyr)
+library(here)
+
+ avocado<-read_csv(here("week 4", "avocado.csv"))
+ 
+ 
+```
+
+Answer Question 1: The variables of interest for this dataset are the date variable, the average price variable, the type variable, the year variable, the region variable, the total volume variable, the 4046 variable, the 4225 variable, and the 4770 variable. The dates represent the observation date and it goes from the year 2015 to 2018 while the average price represent the average price of an avocado per unit cost. 4046 represent small Hass avocado, 4225 represent large Hass avocado and 4770 represent extra large Hass avocado. There are two types of avocado, conventional or organic. Region could be a metro region, major region, state, or city.
+
+```{r}
+#Question 2
+
+avocado_clean<-avocado |>
+  select(-ends_with("Bags"),-...1)|>
+  rename(total_small = '4046',total_large = '4225',
+         total_extra_large='4770',
+         total_volume = "Total Volume")
+
+major_region<-
+  tibble(region = c("Southeast","Northeast", "Plains", "West",
+                    "SouthCentral","Midsouth"))
+state_region<-
+  tibble(region = c("California", "SouthCarolina","Portland",
+                    "Philadelphia" ))
+
+
+
+  
+
+
+
+```
+
+```{r}
+#Question 3
+
+avocado_major_region<-avocado_clean|>
+  semi_join(major_region, by = "region")
+
+avocado_major_region|>
+  filter(type =="organic",year ==2017)|>
+  select(region,total_small)|>
+  slice_max(total_small)
+```
+
+Answer: The major region that sold the most organic small Hass avocados is the Northeast region.
+
+```{r}
+#Question 4
+  avocado_clean|>
+  separate(col = Date, into = c('year','month','day'),sep ='/')|>
+  select(month,total_volume)|>
+  slice_max(total_volume)
+  
+  
+  
+  
+
+
+```
+
+Answer: April is the month that has the highest volume of avocado sold.
+
+```{r}
+#Question 5
+
+
+avocado_metro_region<-avocado_clean|>
+  anti_join(major_region, by = "region")|>
+  anti_join(state_region, by = "region")|>
+  filter(region!= "TotalUS")
+
+avocado_metro_region|>
+  group_by(region)|>
+  summarize(mean_total_volume = mean(total_volume))|>
+  slice_max(region, n=5)
+
+five_mean_region<-tibble(region = c("WestTexNewMexico","Tampa",
+                                    "Syracuse","StLouis","Spokane"))
+
+five_mean_avocado<-avocado_metro_region|>
+  semi_join(five_mean_region, by = "region")
+
+#Graph
+
+ggplot(data = five_mean_avocado,
+  mapping = aes(x = region, y = total_volume, fill = region) )+
+  geom_boxplot(outlier.shape = NA,show.legend =FALSE)+
+   labs(x = "region", y = " total volume",title = "Total volume for the 5 regions")+theme(plot.title = element_text(hjust = 0.5))
+
+  
+  
+```
+
+Answer: The five metro area regions are Spokane, St Louis, Syracuse, Tampa, and West Texas New Mexico.
+
+Source: https://datavizpyr.com/how-to-center-plot-title-and-subtitle-in-ggplot2/
+
+```{r}
+#Question 6
+
+california_region<-
+  tibble(region = c("LosAngeles", "SanDiego", "Sacramento","SanFrancisco"))
+
+california_avocado_region<-avocado_clean|>
+  semi_join(california_region, by = "region")
+
+california_new<-california_avocado_region|>
+  select(-(total_volume:total_extra_large),-year,Date)|>
+  pivot_wider(names_from = type, values_from = AveragePrice)
+
+  california_new|>
+  group_by(region)|>
+  summarize(m_Conventional=mean(conventional),m_organic = mean(organic))|>
+    mutate(diff_mean = m_organic - m_Conventional)|>
+    distinct(abs(diff_mean), region)
+  
+  california_graph<-california_new|>
+  group_by(region)|>
+  summarize(m_Conventional=mean(conventional),m_organic = mean(organic))|>
+    mutate(diff_mean = m_organic - m_Conventional)|>
+    distinct(abs(diff_mean), region)|>
+    rename(diff_price = "abs(diff_mean)")
+   
+  
+  #Graph Visualization
+  
+    ggplot(data = california_graph, 
+           mapping = aes( x = region, y = diff_price, fill = region))+
+      geom_col(show.legend = FALSE,width = 0.4)+
+      scale_x_discrete(expand=c(0,0))+
+      scale_y_continuous(expand=c(0,0)) +
+          labs(y = "differences in price", x= "cities of California")+
+  ggtitle("differences in price of organic vs. conventional \n avocado across four California cities")+
+      theme(plot.title = element_text(hjust = 0.5))
+  
+  
+
+  
+  
+```
+
+Answer: San Francisco has the largest differences in price of organic vs. conventional avocados.
+
+```{r}
+#Question 7
+
+    
+
+    #Question 7 
+   California_mean_graph<- california_avocado_region|>
+    group_by(region,type)|>
+  summarize(m_total_volume=mean(total_volume), m_total_small = mean(total_small),m_total_large = mean(total_large),m_total_extra_large = mean(total_extra_large),.groups = 'drop')|>
+    pivot_longer(names_to = "Avocado_Size", values_to = "Avocado_sold", c(-region, -type,-m_total_volume))
+  
+  #graph
+  
+  ggplot(data = California_mean_graph, aes(x = region, y = Avocado_sold, fill = Avocado_Size))+
+    
+    geom_col(position = position_fill(reverse = TRUE))+
+    labs(y = "Proportion of Mean Avocado Sold", x = "Region of CA")+
+    facet_wrap(.~type)+
+    
+    guides(fill = guide_legend(title = "Avocado Size"))+
+    scale_fill_discrete(labels = c("extra large", "large","small"))
+  
+
+```
+
+Sources:
+
+1.  https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/#rename-legend-labels-and-change-the-order-of-items
+
+2.  https://search.r-project.org/CRAN/refmans/ggplot2/html/guides.html
+
+3.  https://ggplot2.tidyverse.org/reference/position_stack.html
