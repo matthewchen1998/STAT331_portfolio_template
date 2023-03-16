@@ -346,10 +346,18 @@ ggplot(data = surveys,
 ```
 
 -   dates
+-   lab 9 section 3: question 3
 
 ```{r dvs-2-date}
 
-
+allison_f|>
+  group_by(Year)|>
+  summarise(sum(Count))|>
+  rename(N_of_Allison = "sum(Count)")|>
+  ggplot( aes(y = N_of_Allison, x = Year))+
+  geom_line(color = "red" )+
+  labs(x = "years", y = "Number of Allison", title = "Popularity of Allison over the years")+
+  theme( plot.title.position = "plot")
 
 ```
 
@@ -427,57 +435,33 @@ ggplot(data = surveys,
 **DVS-4: I can calculate numerical summaries of variables.**
 
 -   Example 1
--   lab 4 question 5
-
-```{r dvs-4-1}
-
-avocado_metro_region|>
-  group_by(region)|>
-  summarize(mean_total_volume = mean(total_volume))|>
-  slice_max(region, n=5)
-```
-
--   Example 2
--   lab 5 question 3 time-series-plot
-
-```{r dvs-4-2}
-
-surveys|>
-  group_by(genus,year)|>
-  summarize(weight = mean(weight))|>
-  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
-  geom_line()+
-  labs(x = "years", y = "weight (gm)", color = "genus")
-
-```
-
-**DVS-5: I can find summaries of variables across multiple groups.**
-
--   Example 1
 -   lab 3 question 4
 
-```{r dvs-5-1}
+```{r dvs-4-1}
 
 hiphop|>
   summarize(across(asianMove:whiteMove,mean), blackWeekly = mean(blackWeekly))
 ```
 
 -   Example 2
--   lab 3 question 9
+-   lab 7 question 2.1
 
-```{r dvs-5-2}
- hiphop_clean|>
-  select(subj,sex,age,ethnic)|>
-  distinct(subj, .keep_all = TRUE)|>
-  summary()
+```{r dvs-4-2}
+ blackfoot_missing<-blackfoot|>
+   summarize(across(.col = everything(),
+                    ~sum(is.na(.x))))
+ print(blackfoot_missing)
+
+
 ```
 
-**DVS-6: I can create tables which make my summaries clear to the reader.**
+**DVS-5: I can find summaries of variables across multiple groups.**
 
 -   Example 1
--   lab 4 question 4
+-   lab 4 question 5
 
-```{r dvs-6-1}
+```{r dvs-5-1}
+
 avocado_metro_region|>
   group_by(region)|>
   summarize(mean_total_volume = mean(total_volume))|>
@@ -485,42 +469,69 @@ avocado_metro_region|>
 ```
 
 -   Example 2
--   lab 4 question 7
+-   lab 9 section 3: question 1
+
+```{r dvs-5-2}
+name|>
+  rename(sex = Gender)|>
+  filter(Name == "Allison")|>
+  group_by(sex,State)|>
+  summarise(Name = n(), .groups = 'drop')|>
+  pivot_wider(names_from = sex, values_from = Name, values_fill = 0)
+```
+
+**DVS-6: I can create tables which make my summaries clear to the reader.**
+
+-   Example 1
+-   challenge 9 question 9 table
+
+```{r dvs-6-1}
+Q9_table|>
+  gt()|>
+  tab_header(title = md("**Frequency of the three different spelling of *Allan* in California and Pennsylvania**"))|>
+  tab_options(column_labels.background.color = "red")|>
+  tab_style(style = cell_borders(color = "blue", sides = c("left", "right")), locations = cells_body(columns = State))|>
+  as_raw_html()
+
+```
+
+-   Example 2
+-   challenge 9 question 5 table
 
 ```{r dvs-6-2}
- California_mean_graph<- california_avocado_region|>
-    group_by(region,type)|>
-  summarize(m_total_volume=mean(total_volume), m_total_small = mean(total_small),m_total_large = mean(total_large),m_total_extra_large = mean(total_extra_large),.groups = 'drop')|>
-    pivot_longer(names_to = "Avocado_Size", values_to = "Avocado_sold", c(-region, -type,-m_total_volume))
+Q5_table|>
+  gt()|>
+  tab_header(title = md("**Regression Table for *Number of Allison***"))|>
+  tab_options(column_labels.background.color = "green")|>
+  as_raw_html()
 ```
 
 **DVS-7: I show creativity in my tables.**
 
 -   Example 1
--   challenge 4
+-   challenge 9 question 10 table
 
 ```{r dvs-7-1}
+Q10_table|>
+  gt()|>
+  tab_header(title = md("**Percentages of the three different spelling of *Allan* in California and Pennsylvania**"))|>
+  fmt_percent(columns = 2:4, decimals = 1)|>
+ tab_options(column_labels.background.color = "blue")|>
+  tab_style(style = cell_borders(color = "red", sides = c("left", "right")), locations = cells_body(columns = State))|>
+  as_raw_html()
 
-
-house_price_four_cities<-median_house_price|>
-  semi_join(four_cities, by = "RegionName")|>
-  pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
-  rename(region = "RegionName")
-
-house_price_four_cities$region<- gsub(", CA","",as.character(house_price_four_cities$region))
-
-house_price_four_cities$region<-gsub(" ","",as.character(house_price_four_cities$region))
 ```
 
 -   Example 2
--   lab 4 question 2
+-   challenge 9 question 1 table
 
 ```{r dvs-7-2}
-avocado_clean<-avocado |>
-  select(-ends_with("Bags"),-...1)|>
-  rename(total_small = '4046',total_large = '4225',
-         total_extra_large='4770',
-         total_volume = "Total Volume")
+Q1_table|>
+  gt()|>
+  cols_label(F = md("**Female**"), M = md("**Male**"), State = md("**State**")) |>
+  tab_header(title = md("**Number of Allison**"),
+             subtitle =md("**for each state and sex**"))|>
+  as_raw_html()
 ```
 
 ## Program Efficiency
@@ -528,13 +539,13 @@ avocado_clean<-avocado |>
 **PE-1: I can write concise code which does not repeat itself.**
 
 -   using a single function call
--   lab 3 question 5
+-   lab 3 question 14
 
 ```{r pe-1-one-call}
-hiphop_clean <- hiphop |>
-  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
-boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
-  select(-one_of("numPreferredArtists","numOverallArtists"))
+hiphop_clean|>
+  mutate(bieber = as.numeric(bieber))|>
+  filter(city > 10000 & city< 60000, age> 17 & age< 23, ethnic == "white", sex == "Male", bieber >= 5)|>
+  distinct(subj)
 ```
 
 -   `across()`
@@ -548,33 +559,41 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 ```
 
 -   `map()` functions
+-   lab 8 section: **use your function**
 
 ```{r pe-1-map-1}
-
+full_song<- map_chr(1:12, 
+               ~sing_day(dataset = xmas2, 
+                         line = .x, 
+                         phrase_col= Full.Phrase))
 ```
 
 **PE-2: I can write functions to reduce repetition in my code.**
 
 -   Example 1
--   lab 4 question 7
+-   lab 7 question 3.1
 
 ```{r pe2-1}
- California_mean_graph<- california_avocado_region|>
-    group_by(region,type)|>
-  summarize(m_total_volume=mean(total_volume), m_total_small = mean(total_small),m_total_large = mean(total_large),m_total_extra_large = mean(total_extra_large),.groups = 'drop')|>
-    pivot_longer(names_to = "Avocado_Size", values_to = "Avocado_sold", c(-region, -type,-m_total_volume))
+rescale01 <- function(vector) {
+   
+   stopifnot(is.numeric(vector),length(vector )>0)
+   vector_rang<-range(vector, na.rm = TRUE)
+  rescale<-(vector - vector_rang[1]) / (vector_rang[2]-vector_rang[1])
+  return(rescale)
+ }
   
 ```
 
 -   Example 2
--   lab 3 question 14
+-   lab 7 question 3.5
 
 ```{r pe2-2}
-
-hiphop_clean|>
-  mutate(bieber = as.numeric(bieber))|>
-  filter(city > 10000 & city< 60000, age> 17 & age< 23, ethnic == "white", sex == "Male", bieber >= 5)|>
-  distinct(subj)
+rescale_column<-function (data_f, vars){
+data_f<-data_f|>
+    mutate(across(.cols = {{vars}}, 
+                  ~rescale01(.x)))
+return(data_f)
+}
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
@@ -589,13 +608,21 @@ hiphop|>
 ```
 
 -   `map()` functions (Provide 2 Examples)
+-   lab 8 section **use your function**
 
 ```{r pe-3-map-1}
-
+full_song<- map_chr(1:12, 
+               ~sing_day(dataset = xmas2, 
+                         line = .x, 
+                         phrase_col= Full.Phrase))
 ```
 
-```{r pe-3-map-2}
+-   practice activity 9.2
 
+```{r pe-3-map-2}
+my_weights <- map_dbl(.x = 1:1000, 
+                      .f = ~ music_man(n_tromb = 76, n_cor = 110, n_reed = 1035)
+                      ) 
 ```
 
 **PE-4: I can use modern tools when carrying out my analysis.**
@@ -629,10 +656,20 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 
 **DSM-1: I can simulate data from a *variety* of probability models.**
 
--   Example 1
+-   practice activity 9.2
 
 ```{r dsm-1-1}
+set.seed(1957)
 
+music_man <- function(n_tromb, n_cor, n_reed){
+  
+  trombones <- rnorm(n_tromb, mean = 4.6, sd = 0.8)
+  cornets <- runif(n_cor, min = 1.5, max= 3.5 )
+  reeds <- rchisq(n_reed, 4)
+  total_weight<- sum(trombones,cornets, reeds)
+  return(total_weight)
+  
+}
 ```
 
 -   Example 2
@@ -643,16 +680,18 @@ boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
 
 **DSM-2: I can fit a linear regression and extract necessary summary measures.**
 
--   Example 1
+-   practice activity 9.1
 
 ```{r dsm-2-1}
-
+animal_lm<-lm(weight_after~weight_before, data = animal)
 ```
 
--   Example 2
+-   section 4: question 4 and question 5
 
 ```{r dsm-2-2}
+allison_lm<-lm(N_of_Allison~Year, data = allison_data)
 
+get_regression_table(allison_lm)
 ```
 
 ## Revising My Thinking
