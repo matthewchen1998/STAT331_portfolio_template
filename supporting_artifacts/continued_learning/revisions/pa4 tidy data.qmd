@@ -1,20 +1,17 @@
 ---
 title: "Practice Activity 4: Tidy Data with tidyr"
-format: 
-  html: 
-    theme: minty
-    fontsize: 1em
-    mainfont: sans-serif
-    number-sections: true
-    number-depth: 2
-    code-block-bg: "#76b5c5"
-    highlight-style: monochrome
-    self-contained: true
-editor: visual
-execute: 
+author: "Matthew Chen"
+execute:
   echo: true
-resources: 
-  - data/gov_spending_per_capita.xlsx
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
 ---
 
 Today you will be tidying untidy data to explore the relationship between countries of the world and military spending.
@@ -49,10 +46,10 @@ Finally, `read_xlsx()` also has a `n_max` argument, where you specify the maximu
 **1. Modify the code below to read the military expenditures data into your work space.**
 
 ```{r set-up}
-#| eval: false
 library(readxl) 
 library(tidyverse)
 library(dplyr)
+library(here)
 
 military <- read_xlsx(here::here("week 4", 
                                  "gov_spending_per_capita.xlsx"), 
@@ -99,7 +96,7 @@ Luckily for us, these region names were also stored in the "Regional totals" she
 
 Run the code below to read in the "Regional totals" dataset, making any necessary modifications to the path.
 
-```{r, eval = FALSE}
+```{r}
 cont_region <- read_xlsx(here::here("week 4",
                                     "gov_spending_per_capita.xlsx"), 
                       sheet = "Regional totals", 
@@ -112,7 +109,6 @@ cont_region <- read_xlsx(here::here("week 4",
 If you think about `filter()`ing data, so that only certain values of a variable are retained, we should remember our friendly `%in%` function! However, if you think about the code below, you should notice that this code retains only the values we wanted to remove!
 
 ```{r}
-#| eval: false
 
 military_clean |> 
   filter(Country %in% cont_region$Region)
@@ -126,7 +122,8 @@ Unfortunately, R doesn't come with a built-in `!%in%` function. However, a cleve
 To join by different variables on `x` and `y`, use a named vector. For example, `by = c("a" = "b")` will match `x$a` to `y$b`.
 
 ```{r}
- military_clean<-anti_join(military_clean,cont_region,by = c("Country" = "Region"))
+ military_clean<-anti_join(military_clean,cont_region,by = 
+                             c("Country" = "Region"))
 
 ```
 :::
