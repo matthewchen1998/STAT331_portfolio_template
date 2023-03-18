@@ -1,0 +1,133 @@
+---
+title: "Challenge 9"
+author: "Matthew Chen"
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
+---
+
+## Loading in packages and the dataset
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(glue)
+library(stringr)
+library(purrr)
+library(english)
+library(here)
+library(moderndive)
+library(DT)
+library(gt)
+name<-read_csv(here("week 9", "StateNames_A.csv"))
+```
+
+# Part 3 Interactive table
+
+```{r}
+DT::datatable(name)
+```
+
+# Part 1 and part 2
+
+Question 1 table
+
+```{r}
+
+
+Q1_table<-name|>
+  rename(sex = Gender)|>
+  filter(Name == "Allison")|>
+  group_by(sex,State)|>
+  summarise(Name = n(), .groups = 'drop')|>
+  pivot_wider(names_from = sex, values_from = Name, values_fill = 0)
+
+Q1_table|>
+  gt()|>
+  cols_label(F = md("**Female**"), M = md("**Male**"), State = md("**State**")) |>
+  tab_header(title = md("**Number of Allison**"),
+             subtitle =md("**for each state and sex**"))|>
+  as_raw_html()
+  
+```
+
+Question 5 table
+
+```{r}
+allison_f<-name|>
+  filter(Name == "Allison", Gender =="F")
+
+allison_data<-allison_f|>
+  group_by(Year)|>
+  summarise(sum(Count))|>
+  rename(N_of_Allison = "sum(Count)")
+
+allison_lm<-lm(N_of_Allison~Year, data = allison_data)
+
+Q5_table<-get_regression_table(allison_lm)
+
+Q5_table|>
+  gt()|>
+  tab_header(title = md("**Regression Table for *Number of Allison***"))|>
+  tab_options(column_labels.background.color = "green")|>
+  as_raw_html()
+```
+
+Question 9 table:
+
+```{r}
+male_name<-name|>
+  filter(Name%in% c("Allan","Alan", "Allen"), Gender == "M")
+
+Q9_table<-male_name|>
+  filter(Year == 2000, State %in%c("PA","CA"))|>
+  select(Name,State,Count)|>
+  pivot_wider(names_from = Name, values_from = Count )
+
+Q9_table|>
+  gt()|>
+  tab_header(title = md("**Frequency of the three different spelling of *Allan* in California and Pennsylvania**"))|>
+  tab_options(column_labels.background.color = "red")|>
+  tab_style(style = cell_borders(color = "blue", sides = c("left", "right")), locations = cells_body(columns = State))|>
+  as_raw_html()
+  
+  
+
+```
+
+Question 10 table:
+
+```{r}
+Q10_table<-male_name|>
+  filter(Year == 2000, State %in%c("PA","CA"))|>
+  select(Name,State,Count)|>
+  group_by(State)|>
+  mutate(percent = (Count/sum(Count)))|>
+  ungroup()|>
+  select(!Count)|>
+  pivot_wider(names_from = Name, values_from = percent)
+
+Q10_table|>
+  gt()|>
+  tab_header(title = md("**Percentages of the three different spelling of *Allan* in California and Pennsylvania**"))|>
+  fmt_percent(columns = 2:4, decimals = 1)|>
+ tab_options(column_labels.background.color = "blue")|>
+  tab_style(style = cell_borders(color = "red", sides = c("left", "right")), locations = cells_body(columns = State))|>
+  as_raw_html()
+  
+```
+
+Sources:
+
+1.  https://gt.rstudio.com/reference/cell_borders.html
+2.  https://gt.rstudio.com/reference/as_raw_html.html
+3.  https://stackoverflow.com/questions/48446816/explain-ungroup-in-dplyr
+4.  https://gt.rstudio.com/reference/tab_options.html

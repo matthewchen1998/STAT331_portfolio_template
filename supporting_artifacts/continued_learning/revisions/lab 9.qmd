@@ -1,0 +1,144 @@
+---
+title: "Lab 9"
+author: "Matthew Chen"
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
+---
+
+## Loading in Packages and Dataset
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(glue)
+library(stringr)
+library(purrr)
+library(english)
+library(here)
+library(moderndive)
+
+name<-read_csv(here("week 9", "StateNames_A.csv"))
+```
+
+# Section 3: Question 1
+
+```{r}
+name|>
+  rename(sex = Gender)|>
+  filter(Name == "Allison")|>
+  group_by(sex,State)|>
+  summarise(Name = n(), .groups = 'drop')|>
+  pivot_wider(names_from = sex, values_from = Name, values_fill = 0)
+  
+```
+
+# Section 3: question 2
+
+```{r}
+allison_f<-name|>
+  filter(Name == "Allison", Gender =="F")
+  
+```
+
+# Section 3: question 3
+
+```{r}
+allison_f|>
+  group_by(Year)|>
+  summarise(sum(Count))|>
+  rename(N_of_Allison = "sum(Count)")|>
+  ggplot( aes(y = N_of_Allison, x = Year))+
+  geom_line(color = "red" )+
+  labs(x = "years", y = "Number of Allison", title = "Popularity of Allison over the years")+
+  theme( plot.title.position = "plot")
+  
+```
+
+# section 4: question 4
+
+```{r}
+allison_data<-allison_f|>
+  group_by(Year)|>
+  summarise(sum(Count))|>
+  rename(N_of_Allison = "sum(Count)")
+
+
+allison_lm<-lm(N_of_Allison~Year, data = allison_data)
+```
+
+# section 4: question 5
+
+```{r}
+
+get_regression_table(allison_lm)
+```
+
+Answer:
+
+![](images/image-1424145450.png)
+
+# section 4: question 6
+
+```{r}
+
+allison_lm|>
+  broom::augment()|>
+  ggplot(aes(y = .resid, x = .fitted))+
+  geom_point()
+```
+
+Answer: There is fanning in the residual vs. fitted plot as the data points are not equally spread out across the plot. One group of data points is much lower than the other data points in the plot.
+
+# Section 4: question 7
+
+Answer: This model is not a good model as the assumption of the equal variance condition has been violated. The name of Allison is no longer popular.
+
+# Section 5: question 8
+
+```{r}
+male_name<-name|>
+  filter(Name%in% c("Allan","Alan", "Allen"), Gender == "M")
+
+male_name|>
+  group_by(Name, Year)|>
+  summarise(total_count = sum(Count))|>
+   ggplot( aes(y = total_count, x = Year, color = fct_reorder2(Name,Year,total_count)))+
+  geom_line()+
+  labs(x = "years", y = "count ", title = "Popularity of these three names over the years", color = "Names")+
+    theme( plot.title.position = "plot")
+
+  
+  
+  
+```
+
+# Section 5: question 9
+
+```{r}
+male_name|>
+  filter(Year == 2000, State %in%c("PA","CA"))|>
+  select(Name,State,Count)|>
+  pivot_wider(names_from = Name, values_from = Count )
+  
+```
+
+# Section 5: question 10
+
+```{r}
+male_name|>
+  filter(Year == 2000, State %in%c("PA","CA"))|>
+  select(Name,State,Count)|>
+  group_by(State)|>
+  mutate(percent = (Count/sum(Count)))|>
+  select(!Count)|>
+  pivot_wider(names_from = Name, values_from = percent)
+```

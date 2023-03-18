@@ -1,0 +1,140 @@
+---
+title: "Lab 7"
+author: "Matthew Chen"
+execute:
+  echo: true
+  message: false
+  warning: false
+  error: true
+format: 
+ html: 
+   self-contained: true
+   code-tools: true
+   code-fold: true
+editor: visual
+---
+
+.
+
+# part 2.1 and 2.2
+
+```{r}
+# loading in packages
+
+library(tidyverse)
+library(dplyr)
+library(here)
+# 2.1
+
+ blackfoot<-read_csv(here("week 7", "BlackfootFish.csv"))
+ 
+ 
+ blackfoot_missing<-blackfoot|>
+   summarize(across(.col = everything(),
+                    ~sum(is.na(.x))))
+ print(blackfoot_missing)
+ 
+# 2.2
+ blackfoot|>
+   filter(is.na(weight))|>
+   group_by(year,trip,section)|>
+   summarise(weight = n(),.groups = 'drop')|>
+   mutate(trip = as.factor(trip))|>
+   mutate(trip = fct_recode(trip,
+                             "Trip 1" = "1",
+                             "Trip 2" = "2"))|>
+    ggplot( aes(y = weight, x = year,fill = section))+
+  geom_bar(stat = "identity")+
+  labs(x = "years", y = "Count",title = "Missing values acorss different \n years, sections, and trips")+
+   facet_wrap(.~trip)+
+   theme( plot.title.position = "plot")
+   
+ 
+ 
+ 
+ 
+ 
+
+
+ 
+ 
+```
+
+# 3.1 and 3.2
+
+```{r}
+
+rescale01 <- function(vector) {
+   
+   stopifnot(is.numeric(vector),length(vector )>0)
+   vector_rang<-range(vector, na.rm = TRUE)
+  rescale<-(vector - vector_rang[1]) / (vector_rang[2]-vector_rang[1])
+  return(rescale)
+ }
+```
+
+# 3.3
+
+```{r}
+
+  
+ check<-function(ck){
+   stopifnot(is.numeric(ck),length(ck)>0)
+
+ ck_rang<-range(ck, na.rm = TRUE)
+ if(ck_rang[1]==0 & ck_rang[2]==1){print("That's work")}
+else{print ("That's does not work")
+} }
+ 
+ x <- c(1:85, NA)
+ x<-rescale01(x)
+ x<-check(x)
+ 
+```
+
+# 3.4
+
+```{r}
+ #| layout-nrow: 2
+
+blackfoot<- blackfoot|>
+   mutate(rescale_length = rescale01(length))
+
+
+ #Graph 1
+
+
+ ggplot(data = blackfoot,
+  mapping = aes(x = length))+
+geom_density(color = "blue")+
+   labs(x = "length (mm)",
+        title = "original length boxplot")+
+   theme(plot.title = element_text(hjust = 0.5))
+ 
+ #Graph 2
+ 
+ ggplot(data = blackfoot,
+  mapping = aes(x = rescale_length))+
+  geom_density(color = "blue")+
+   labs(x = "length (mm)", 
+        title = "rescale length boxplot")+
+   theme(plot.title = element_text(hjust = 0.5))
+```
+
+# 3.5 and 3.6
+
+```{r}
+
+rescale_column<-function (data_f, vars){
+data_f<-data_f|>
+    mutate(across(.cols = {{vars}}, 
+                  ~rescale01(.x)))
+return(data_f)
+}
+
+blackfoot<-blackfoot|>
+  rescale_column(vars = c(length,weight))
+
+print(blackfoot)
+  
+```
