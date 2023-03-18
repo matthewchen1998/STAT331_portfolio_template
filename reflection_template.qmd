@@ -47,7 +47,7 @@ military <- read_xlsx(here::here("data",
 ```
 
 -   `txt`
--   practice activity 5.2
+-   practice activity 5.1
 
 ```{r wd-1-txt}
 
@@ -303,18 +303,14 @@ house_price_four_cities<-median_house_price|>
 **DVS-1: I can create visualizations for a *variety* of variable types (e.g., numeric, character, factor, date)**
 
 -   numeric variables
--   lab 5 time-series-plot section question 4 (Revised - theme(plot.title.position = "plot"))
+-   
 
 ```{r dvs-1-num}
 
-surveys|>
-  group_by(genus,year)|>
-  summarize(weight = mean(weight))|>
-  ggplot( aes(y = weight, x = year,color = fct_reorder2(genus,year,weight)))+
-  geom_line()+
-  labs(x = "years", y = NULL, color = "genus")+
-  ggtitle("Mean Weight (gm) for each genus for each year ")+
- theme( plot.title.position = "plot")
+ggplot(data = surveys, mapping = aes(x = weight, y = hindfoot_length)) +
+  geom_point()+
+  geom_jitter()+
+   labs(x = "Weight (gm)", y = "hindfoot length (mm)")
  
 ```
 
