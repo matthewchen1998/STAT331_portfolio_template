@@ -183,7 +183,7 @@ suspects <- suspects %>%
 **WD-5: I can use mutating joins to combine multiple dataframes.**
 
 -   `left_join()`
--   preview activity 4
+-   preview activity 4.3
 
 ```{r wd-5-left}
 prof_course|>
@@ -192,7 +192,7 @@ prof_course|>
 ```
 
 -   `right_join()`
--   preview activity 4
+-   preview activity 4.3
 
 ```{r wd-5-right}
 prof_course|>
@@ -200,7 +200,7 @@ prof_course|>
 ```
 
 -   `inner_join()`
--   preview activity 4
+-   preview activity 4.3
 
 ```{r wd-5-inner}
 inner_join(prof_info,prof_course)
