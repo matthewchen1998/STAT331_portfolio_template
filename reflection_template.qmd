@@ -86,15 +86,12 @@ avocado_major_region|>
 ```
 
 -   character -- specifically a string
--   Lab 3 Question 14
+-   Practice Activity 5.2
 
 ```{r wd-3-string}
+message<-message|>
+  filter(str_detect(string = Word, pattern = "ugh+[:punct:]") == FALSE)
 
-
-hiphop_clean|>
-  mutate(bieber = as.numeric(bieber))|>
-  filter(city > 10000 & city< 60000, age> 17 & age< 23, ethnic == "white", sex == "Male", bieber >= 5)|>
-  distinct(subj)
 
 ```
 
@@ -137,24 +134,37 @@ suspects <- suspects %>%
 ```
 
 -   character -- specifically a string
--   lab 3 question 7
+-   Practice Activity 5.2
 
 ```{r wd-4-string}
+message<-message|>
+  mutate(Word = str_replace(string = Word, pattern = "aa", replace = "ee"))
 
-hiphop_clean<-hiphop_clean|>
-  mutate(race = if_else(ethnic == "white", "white","non-white"))
 ```
 
 -   factor
--   lab 3 question 5
+-   lab 5 **capture over the week** question 3
 
 ```{r wd-4-factor}
+surveys|>
+  filter(day_of_week != "NA" )|>
+  mutate(day_of_week = fct_recode(day_of_week, 
+    "Weekday" = "Mon",
+    "Weekday" = "Tue",
+    "Weekday" = "Wed",
+    "Weekday" = "Thu",
+    "Weekday" = "Fri",
+    "Weekend" = "Sat",
+    "Weekend" = "Sun"))|>
+  group_by(day_of_week)|>
+  summarise(taxa = n())|>
+  ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
+     geom_col(show.legend = FALSE,width = 0.2)+
+     labs(x = "day of week", y = NULL)+
+  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
+  theme(plot.title.position = "plot")
 
 
-hiphop_clean <- hiphop |>
-  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
-boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
-  select(-one_of("numPreferredArtists","numOverallArtists"))
 ```
 
 -   date
