@@ -143,7 +143,7 @@ message<-message|>
 ```
 
 -   factor
--   lab 5 **capture over the week** question 3
+-   lab 5 **capture over the week** question 3 (Revised-labs(title=))
 
 ```{r wd-4-factor}
 surveys|>
@@ -160,8 +160,9 @@ surveys|>
   summarise(taxa = n())|>
   ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
      geom_col(show.legend = FALSE,width = 0.2)+
-     labs(x = "day of week", y = NULL)+
-  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
+     labs(x = "day of week", 
+          y = NULL,
+  title = "Number of rodents captured either in weekend \n or in weekday")+
   theme(plot.title.position = "plot")
 
 
@@ -182,22 +183,27 @@ suspects <- suspects %>%
 **WD-5: I can use mutating joins to combine multiple dataframes.**
 
 -   `left_join()`
+-   preview activity 4
 
 ```{r wd-5-left}
-
+prof_course|>
+  left_join(prof_info)
 
 ```
 
 -   `right_join()`
+-   preview activity 4
 
 ```{r wd-5-right}
-
+prof_course|>
+  right_join(prof_info)
 ```
 
 -   `inner_join()`
+-   preview activity 4
 
 ```{r wd-5-inner}
-
+inner_join(prof_info,prof_course)
 ```
 
 -   `full_join()`
@@ -286,25 +292,31 @@ surveys|>
 **R-3: I can write robust programs that are resistant to changes in inputs.**
 
 -   Example 1
--   challenge 4
+-   lab 4 question 5
 
 ```{r r-3-1}
 
-house_price_four_cities<-median_house_price|>
-  semi_join(four_cities, by = "RegionName")|>
-  pivot_longer(names_to = "months", values_to = "prices", c(-RegionID, -SizeRank, -RegionName,-RegionType,-StateName))|>
-  rename(region = "RegionName")
+
+avocado_metro_region|>
+  group_by(region)|>
+  summarize(mean_total_volume = mean(total_volume))|>
+  slice_max(region, n=5)
 
 ```
 
 -   Example 2
--   lab 3 question 9
+-   lab 7 question 3.1
 
 ```{r r-3-2}
-  hiphop_clean|>
-  select(subj,sex,age,ethnic)|>
-  distinct(subj, .keep_all = TRUE)|>
-  summary()
+ 
+  
+  rescale01 <- function(vector) {
+   
+   stopifnot(is.numeric(vector),length(vector )>0)
+   vector_rang<-range(vector, na.rm = TRUE)
+  rescale<-(vector - vector_rang[1]) / (vector_rang[2]-vector_rang[1])
+  return(rescale)
+ }
 
 ```
 
@@ -313,7 +325,7 @@ house_price_four_cities<-median_house_price|>
 **DVS-1: I can create visualizations for a *variety* of variable types (e.g., numeric, character, factor, date)**
 
 -   numeric variables
--   
+-   lab 2 question 6
 
 ```{r dvs-1-num}
 
@@ -325,7 +337,7 @@ ggplot(data = surveys, mapping = aes(x = weight, y = hindfoot_length)) +
 ```
 
 -   numeric variables and categorical variables
--   lab 5 revisiting lab 2 section question 2
+-   lab 5 revisiting lab 2 section question 2 (Revised-labs(title=))
 
 ```{r dvs-2-num-cat}
 
@@ -333,7 +345,9 @@ ggplot(data = surveys, mapping = aes(x = weight, y = hindfoot_length)) +
 ggplot(data = surveys,
   mapping = aes(x = weight, y = fct_reorder(species,weight)))+
   geom_boxplot()+
-   labs(x = "Weight (gm)", y = NULL)+ggtitle("Weights for Each Animal Species")+
+   labs(x = "Weight (gm)", 
+        y = NULL,
+       title= "Weights for Each Animal Species")+
    theme( plot.title.position = "plot")
      
 
@@ -370,7 +384,7 @@ allison_f|>
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
 
 -   Example 1
--   lab 5 question 3 capture 0ver the week section (Revised - theme(plot.title.position = "plot"))
+-   lab 5 question 3 capture 0ver the week section (Revised - theme(plot.title.position = "plot") and revised-labs(title = ))
 
 ```{r dvs-2-1}
 surveys|>
@@ -387,13 +401,14 @@ surveys|>
   summarise(taxa = n())|>
   ggplot(aes( x = day_of_week, y =taxa, fill = day_of_week))+
      geom_col(show.legend = FALSE,width = 0.2)+
-     labs(x = "day of week", y = NULL)+
-  ggtitle("Number of rodents captured either in weekend \n or in weekday")+
+     labs(x = "day of week", 
+          y = NULL,
+          title = "Number of rodents captured either in weekend \n or in weekday")+
   theme(plot.title.position = "plot")
 ```
 
 -   Example 2
--   lab 5 question 3
+-   lab 5 question 3 (Revised-labs(title=))
 
 ```{r dvs-2-2}
   ggplot(data = california_graph, 
@@ -401,8 +416,9 @@ surveys|>
       geom_col(show.legend = FALSE,width = 0.4)+
       scale_x_discrete(expand=c(0,0))+
       scale_y_continuous(expand=c(0,0)) +
-          labs(y = "differences in price", x= "cities of California")+
-  ggtitle("differences in price of organic vs. conventional \n avocado across four California cities")+
+          labs(y = "differences in price", 
+               x= "cities of California",
+               title = "differences in price of organic vs. conventional \n avocado across four California cities")+
       theme(plot.title = element_text(hjust = 0.5))
 ```
 
@@ -518,6 +534,15 @@ Q5_table|>
 -   challenge 9 question 10 table
 
 ```{r dvs-7-1}
+Q10_table<-male_name|>
+  filter(Year == 2000, State %in%c("PA","CA"))|>
+  select(Name,State,Count)|>
+  group_by(State)|>
+  mutate(percent = (Count/sum(Count)))|>
+  ungroup()|>
+  select(!Count)|>
+  pivot_wider(names_from = Name, values_from = percent)
+
 Q10_table|>
   gt()|>
   tab_header(title = md("**Percentages of the three different spelling of *Allan* in California and Pennsylvania**"))|>
@@ -532,6 +557,14 @@ Q10_table|>
 -   challenge 9 question 1 table
 
 ```{r dvs-7-2}
+
+Q1_table<-name|>
+  rename(sex = Gender)|>
+  filter(Name == "Allison")|>
+  group_by(sex,State)|>
+  summarise(Name = n(), .groups = 'drop')|>
+  pivot_wider(names_from = sex, values_from = Name, values_fill = 0)
+
 Q1_table|>
   gt()|>
   cols_label(F = md("**Female**"), M = md("**Male**"), State = md("**State**")) |>
@@ -555,12 +588,13 @@ hiphop_clean|>
 ```
 
 -   `across()`
--   lab 3 question 5
+-   lab 3 question 5 (Revised-across(.cols = c(), .fns = \~as.factor(.x))
 
 ```{r pe-1-across}
 hiphop_clean <- hiphop |>
-  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
-boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
+  mutate(across(.cols = c(familiarity, jayz, jayz1, barkley, boondocks,
+boondocks1, monique, bieber, word, subj, ethnic,sex),
+.fns = ~as.factor(.x)))|>
   select(-one_of("numPreferredArtists","numOverallArtists"))
 ```
 
@@ -647,14 +681,15 @@ hiphop_clean|>
 ```
 
 -   Example 2
--   lab 4 question 5
+-   lab 7 question part 2.1
 
 ```{r pe-4-2}
 
-hiphop_clean <- hiphop |>
-  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
-boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
-  select(-one_of("numPreferredArtists","numOverallArtists"))
+
+ blackfoot_missing<-blackfoot|>
+   summarize(across(.col = everything(),
+                    ~sum(is.na(.x))))
+ print(blackfoot_missing)
 
 ```
 
@@ -704,13 +739,13 @@ get_regression_table(allison_lm)
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
-Answer: Before lab 5, I do not know that I could use the dplyr function along with the ggplot to create plots and graphs. On Lab 5, I have used the dplyr function to pipe functions into my ggplots. Previously, I always thought that you need to create another dataset in order to create a graph using the ggplot. After I have submitted my lab 5 assignment, I have found out that I do not fully follow Will Chase to have my titles of the graph to be left-aligned. Previously, I only know how to center the titles of the graph as I do not know about the importance of left-alignment of the titles. After doing some research, I have found out that using theme(plot.title.position = "plot") will create a left-alignment for your graph titles.
+Answer: Before lab 5, I do not know that I could use the dplyr function along with the ggplot to create plots and graphs. On Lab 5, I have used the dplyr function to pipe functions into my ggplots. Previously, I always thought that you need to create another dataset in order to create a graph using the ggplot. After I have submitted my lab 5 assignment, I have found out that I do not fully follow Will Chase to have my titles of the graph to be left-aligned. Previously, I only know how to center the titles of the graph as I do not know about the importance of left-alignment of the titles. After doing some research, I have found out that using theme(plot.title.position = "plot") will create a left-alignment for your graph titles. I have also learned that ggtitle function is unnecessary as you could use the title option within the labs function. I have changed my old way of using the across function to a new way of using the across function by using .cols and .fns within across.
 
 ## Extending My Thinking
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
-Answer: Throughout the course, I have been think about about how to divide my titles into two lines when the lines are too long. Through some research, I have found out that by using the escape character "\\n" I could divide my titles into two lines. I started to use the escape character "\\n" on my lab 4 assignment. I also learned how to center my title for the graph when I was doing my lab 4 assignment. I found out that the function "theme(plot.title = element_text(hjust = 0.5))" allows you to center your title for the graph after doing some research . When I was doing research for my Challenge 4 assignment, I have learned how to remove spaces between character strings within a variable using the "gsub" function.
+Answer: Throughout the course, I have been think about about how to divide my titles into two lines when the lines are too long. Through some research, I have found out that by using the escape character "\\n" I could divide my titles into two lines. I started to use the escape character "\\n" on my lab 4 assignment. I also learned how to center my title for the graph when I was doing my lab 4 assignment. I found out that the function "theme(plot.title = element_text(hjust = 0.5))" allows you to center your title for the graph after doing some research . When I was doing research for my Challenge 4 assignment, I have learned how to remove spaces between character strings within a variable using the "gsub" function. I have learned that in order for my one of my table in challenge 9 to have the percent sign output I need to use the ungroup function because I am doing transformation for the entire dataset.
 
 ## Peer Support & Collaboration
 
