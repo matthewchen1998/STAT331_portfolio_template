@@ -124,8 +124,8 @@ It would be most efficient to use `across()` in combination with `mutate()` to c
 
 
 hiphop_clean <- hiphop |>
-  mutate(across( c(familiarity, jayz, jayz1, barkley, boondocks,
-boondocks1, monique, bieber, word, subj, ethnic,sex),as.factor))|>
+  mutate(across(.cols = c(familiarity, jayz, jayz1, barkley, boondocks, boondocks1, monique, bieber, word, subj, ethnic,sex), 
+.fns = ~as.factor(.x)))|>
   select(-one_of("numPreferredArtists","numOverallArtists"))
 
 
