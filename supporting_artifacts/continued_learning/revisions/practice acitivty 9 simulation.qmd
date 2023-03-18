@@ -1,0 +1,47 @@
+---
+title: "Practice activity 9 simulation"
+author: "Matthew"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+a = 1.5
+b = 3.5
+range<-seq(a,b)
+trumpt_weight<-punif(range, a, b)
+print(trumpt_weight)
+
+```
+
+You can add options to executable code like this
+
+```{r}
+set.seed(1957)
+
+music_man <- function(n_tromb, n_cor, n_reed){
+  
+  trombones <- rnorm(n_tromb, mean = 4.6, sd = 0.8)
+  cornets <- runif(n_cor, min = 1.5, max= 3.5 )
+  reeds <- rchisq(n_reed, 4)
+  total_weight<- sum(trombones,cornets, reeds)
+  return(total_weight)
+  
+}
+
+my_weights <- map_dbl(.x = 1:1000, 
+                      .f = ~ music_man(n_tromb = 76, n_cor = 110, n_reed = 1035)
+                      ) 
+sum(my_weights<4532)
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
