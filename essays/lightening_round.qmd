@@ -22,4 +22,4 @@ Answer: The part of the class that surprised me the most is the English package 
 
 -   Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
 
-Answer:
+Answer: They need to check whether their packages are up-to-date to the latest version as some codes will not run with the old version of the packages.
