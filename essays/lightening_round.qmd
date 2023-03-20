@@ -3,3 +3,23 @@ title: "Lightening Round Essays"
 format: html
 editor: visual
 ---
+
+-   Finish the sentence with another student\'s name: \"If Pablo Danh Nguyen doesn\'t earn an A, then nobody should, because...\" Explain your choice and your reasoning.
+
+Answer: If Pablo Danh Nguyen doesn\'t earn an A, then nobody should, because Pablo demonstrated proficiency in R programming language and is very helping during practice activity within our group. One time when he was being assigned to review my code, he gave me feedback that is very constructive and helpful.
+
+-   What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
+
+Answer: The most difficult part of the class is the graph from lab 4 question 7. I have spent a lot of time doing research on how to construct the graph as making graphs for proportion is one of my weakness.
+
+-   What was the easiest part of the class for you? Explain why.
+
+Answer: The easiest part of the class is lab 5. The time-series plot is not difficult to construct and I do not have any trouble using various fct functions.
+
+-   What part of the class surprised or interested you the most? Explain why.
+
+Answer: The part of the class that surprised me the most is the English package in r. Initially, I did not believe that it is possible to convert numbers into English words in any programming language.
+
+-   Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+
+Answer:
